@@ -1,0 +1,74 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ],
+  "hosting": {
+    "public": "web/build",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/api/**",
+        "function": "api"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "emulators": {
+    "auth": {
+      "port": 6411
+    },
+    "firestore": {
+      "port": 6412
+    },
+    "functions": {
+      "port": 6413
+    },
+    "hosting": {
+      "port": 6414
+    },
+    "storage": {
+      "port": 6415
+    },
+    "ui": {
+      "enabled": true,
+      "port": 6416
+    },
+    "hub": {
+      "port": 6417
+    },
+    "pubsub": {
+      "port": 6418
+    },
+    "eventarc": {
+      "port": 6419
+    },
+    "singleProjectMode": true
+  }
+}

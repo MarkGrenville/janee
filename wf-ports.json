@@ -1,0 +1,58 @@
+{
+  "id": "janee",
+  "name": "JaNee",
+  "description": "Tinder-style yes/no decision app with AI integration, webhooks, and CLI",
+  "focusIdentifier": "janee",
+  "projectPath": "/Users/markgrenville/Projects/janee",
+  "firebaseProjectId": "janee-dev",
+  "services": [
+    {
+      "name": "SvelteKit Web",
+      "port": 6400,
+      "url": "http://localhost:6400",
+      "purpose": "SvelteKit frontend (landing + app + docs)"
+    },
+    {
+      "name": "Flutter Web",
+      "port": 6410,
+      "url": "http://localhost:6410",
+      "purpose": "Flutter web dev server (mobile companion)"
+    },
+    {
+      "name": "Firebase Auth Emulator",
+      "port": 6411,
+      "url": "http://localhost:6411",
+      "purpose": "Firebase Auth emulator"
+    },
+    {
+      "name": "Firestore Emulator",
+      "port": 6412,
+      "url": "http://localhost:6412",
+      "purpose": "Firestore emulator"
+    },
+    {
+      "name": "Functions Emulator",
+      "port": 6413,
+      "url": "http://localhost:6413",
+      "purpose": "Cloud Functions emulator"
+    },
+    {
+      "name": "Hosting Emulator",
+      "port": 6414,
+      "url": "http://localhost:6414",
+      "purpose": "Firebase Hosting emulator"
+    },
+    {
+      "name": "Storage Emulator",
+      "port": 6415,
+      "url": "http://localhost:6415",
+      "purpose": "Firebase Storage emulator"
+    },
+    {
+      "name": "Emulator UI",
+      "port": 6416,
+      "url": "http://localhost:6416",
+      "purpose": "Firebase Emulator Suite UI"
+    }
+  ]
+}

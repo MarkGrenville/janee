@@ -1,0 +1,65 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+.svelte-kit/
+.output/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+pubsub-debug.log
+ui-debug.log
+storage-debug.log
+functions/lib/
+emulator-data/
+
+# Flutter
+app/.dart_tool/
+app/.packages
+app/build/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/ios/Pods/
+app/ios/.symlinks/
+app/android/.gradle/
+app/android/local.properties
+app/android/app/debug/
+app/android/app/profile/
+app/android/app/release/
+app/*.iml
+app/.metadata
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# PM2
+.pm2/
+ecosystem.config.cjs.bak
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+.Spotlight-V100
+.Trashes
+
+# Secrets
+credentials.json
+service-account*.json

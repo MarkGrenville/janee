@@ -1,0 +1,96 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Helper functions ---
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAppOwner(appId) {
+      return isAuthenticated()
+        && get(/databases/$(database)/documents/apps/$(appId)).data.ownerId == request.auth.uid;
+    }
+
+    function isSubscribed(appId) {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid)/subscriptions/$(appId));
+    }
+
+    function isAppReadable(appId) {
+      let app = get(/databases/$(database)/documents/apps/$(appId));
+      return isAuthenticated()
+        && (app.data.isPublic == true || app.data.ownerId == request.auth.uid || isSubscribed(appId));
+    }
+
+    // --- Users ---
+
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if false;
+
+      // Decisions subcollection
+      match /decisions/{decisionId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Subscriptions subcollection
+      match /subscriptions/{appId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId);
+        allow delete: if isOwner(userId);
+        allow update: if false;
+      }
+
+      // Friends subcollection
+      match /friends/{friendId} {
+        allow read: if isOwner(userId) || isOwner(friendId);
+        allow create: if isOwner(userId);
+        allow update: if isOwner(userId) || isOwner(friendId);
+        allow delete: if isOwner(userId) || isOwner(friendId);
+      }
+    }
+
+    // --- Apps ---
+
+    match /apps/{appId} {
+      allow read: if isAuthenticated()
+        && (resource.data.isPublic == true
+            || resource.data.ownerId == request.auth.uid
+            || isSubscribed(appId));
+      allow create: if isAuthenticated()
+        && request.resource.data.ownerId == request.auth.uid;
+      allow update: if isAppOwner(appId);
+      allow delete: if isAppOwner(appId);
+
+      // Cards subcollection
+      match /cards/{cardId} {
+        allow read: if isAppReadable(appId);
+        allow create: if isAppOwner(appId);
+        allow update: if isAppOwner(appId);
+        allow delete: if isAppOwner(appId);
+      }
+    }
+
+    // --- API Keys ---
+
+    match /apiKeys/{keyHash} {
+      allow read: if isAuthenticated()
+        && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated()
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated()
+        && resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated()
+        && resource.data.userId == request.auth.uid;
+    }
+  }
+}

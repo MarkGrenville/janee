@@ -1,0 +1,65 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start All",
+      "type": "shell",
+      "command": "pm2 start ecosystem.config.cjs",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Stop All",
+      "type": "shell",
+      "command": "pm2 delete janee-emulators janee-web janee-flutter janee-backup 2>/dev/null; echo 'All JaNee processes stopped'",
+      "problemMatcher": []
+    },
+    {
+      "label": "Restart Emulators",
+      "type": "shell",
+      "command": "pm2 restart janee-emulators",
+      "problemMatcher": []
+    },
+    {
+      "label": "Restart Web",
+      "type": "shell",
+      "command": "pm2 restart janee-web",
+      "problemMatcher": []
+    },
+    {
+      "label": "View Logs",
+      "type": "shell",
+      "command": "pm2 logs --lines 50",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Backup Emulator Data",
+      "type": "shell",
+      "command": "bash scripts/backup-emulator.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "Seed Database",
+      "type": "shell",
+      "command": "bash scripts/seed.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "Deploy",
+      "type": "shell",
+      "command": "bash scripts/deploy.sh",
+      "problemMatcher": []
+    }
+  ]
+}
