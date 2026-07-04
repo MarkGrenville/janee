@@ -125,6 +125,12 @@
 		</a>
 		<div class="flex items-center gap-6">
 			<a
+				href="/docs"
+				class="text-sm font-medium text-ivory/60 hover:text-ivory transition-colors duration-300"
+			>
+				Docs
+			</a>
+			<a
 				href="/login"
 				class="text-sm font-medium text-ivory/60 hover:text-ivory transition-colors duration-300"
 			>
@@ -361,6 +367,20 @@
 						</div>
 					</div>
 				</div>
+				<div class="flex items-center gap-6 mt-6">
+					<a
+						href="/docs/api"
+						class="text-sm text-amber hover:text-amber-light transition-colors font-medium"
+					>
+						Read the full API docs &rarr;
+					</a>
+					<a
+						href="/docs/cli"
+						class="text-sm text-amber hover:text-amber-light transition-colors font-medium"
+					>
+						CLI Guide &rarr;
+					</a>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -473,25 +493,37 @@
 <!-- ======================== FOOTER ======================== -->
 <footer class="bg-jet text-ivory py-20 border-t border-ivory/5">
 	<div class="max-w-7xl mx-auto px-6 lg:px-8">
-		<div class="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
-			<div class="md:col-span-2">
+		<div class="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
+			<div class="md:col-span-3">
 				<a href="/" class="font-serif text-2xl font-bold tracking-tight">JaNee</a>
 				<p class="mt-4 text-ivory/40 leading-relaxed max-w-sm">
 					Make every decision count. The Tinder-style decision app for individuals, teams, and AI workflows.
 				</p>
 			</div>
-			<div>
+			<div class="md:col-span-3">
 				<h4 class="text-xs font-semibold tracking-[0.15em] uppercase text-ivory/30 mb-4">Product</h4>
 				<ul class="space-y-3">
-					<li><a href="/about" class="text-ivory/60 hover:text-ivory transition-colors text-sm">About</a></li>
-					<li><a href="/docs" class="text-ivory/60 hover:text-ivory transition-colors text-sm">Docs</a></li>
-					<li><a href="/docs/cli" class="text-ivory/60 hover:text-ivory transition-colors text-sm">CLI</a></li>
-					<li><a href="/docs/api" class="text-ivory/60 hover:text-ivory transition-colors text-sm">API</a></li>
+					<li><a href="/swipe" class="text-ivory/60 hover:text-ivory transition-colors text-sm">Swipe</a></li>
+					<li><a href="/apps" class="text-ivory/60 hover:text-ivory transition-colors text-sm">Apps</a></li>
+					<li><a href="/docs/api" class="text-ivory/60 hover:text-ivory transition-colors text-sm">API Docs</a></li>
+					<li><a href="/docs/cli" class="text-ivory/60 hover:text-ivory transition-colors text-sm">CLI Guide</a></li>
 				</ul>
 			</div>
-			<div>
-				<h4 class="text-xs font-semibold tracking-[0.15em] uppercase text-ivory/30 mb-4">Legal</h4>
+			<div class="md:col-span-3">
+				<h4 class="text-xs font-semibold tracking-[0.15em] uppercase text-ivory/30 mb-4">Developers</h4>
 				<ul class="space-y-3">
+					<li><a href="/docs" class="text-ivory/60 hover:text-ivory transition-colors text-sm">Documentation</a></li>
+					<li><a href="https://github.com/janee-app/janee" class="text-ivory/60 hover:text-ivory transition-colors text-sm">GitHub</a></li>
+					<li><a href="/docs/api" class="text-ivory/60 hover:text-ivory transition-colors text-sm">API Reference</a></li>
+					<li><a href="/docs/cli" class="text-ivory/60 hover:text-ivory transition-colors text-sm">CLI Guide</a></li>
+					<li><a href="/docs/guides/webhooks" class="text-ivory/60 hover:text-ivory transition-colors text-sm">Webhooks</a></li>
+				</ul>
+			</div>
+			<div class="md:col-span-3">
+				<h4 class="text-xs font-semibold tracking-[0.15em] uppercase text-ivory/30 mb-4">Company</h4>
+				<ul class="space-y-3">
+					<li><a href="/about" class="text-ivory/60 hover:text-ivory transition-colors text-sm">About</a></li>
+					<li><a href="/blog" class="text-ivory/60 hover:text-ivory transition-colors text-sm">Blog</a></li>
 					<li><a href="/privacy" class="text-ivory/60 hover:text-ivory transition-colors text-sm">Privacy</a></li>
 					<li><a href="/terms" class="text-ivory/60 hover:text-ivory transition-colors text-sm">Terms</a></li>
 				</ul>

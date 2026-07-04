@@ -2,7 +2,7 @@
 set -euo pipefail
 
 FUNCTIONS_HOST="http://localhost:6413"
-API_BASE="${FUNCTIONS_HOST}/janee-dev/us-central1/api"
+API_BASE="${FUNCTIONS_HOST}/demo-janee/us-central1/api"
 
 echo "[janee-seed] Seeding emulator database..."
 echo "[janee-seed] Functions endpoint: $API_BASE"

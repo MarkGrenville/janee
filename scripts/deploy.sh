@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-EXPECTED_PROJECT="janee-dev"
+EXPECTED_PROJECT="demo-janee"
 CURRENT_PROJECT=$(firebase use 2>/dev/null | grep -oP '(?<=Active Project: )\S+' || echo "")
 
 if [[ -z "$CURRENT_PROJECT" ]]; then

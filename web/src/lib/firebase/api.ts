@@ -1,8 +1,46 @@
 import { getFirebaseAuth } from './config';
 
-const API_BASE = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-	? 'http://localhost:6413/janee-dev/us-central1/api'
-	: '/api';
+let resolvedApiBase: string | null = null;
+
+async function discoverApiBase(): Promise<string> {
+	if (resolvedApiBase) return resolvedApiBase;
+
+	if (typeof window === 'undefined' || window.location.hostname !== 'localhost') {
+		resolvedApiBase = '';
+		return resolvedApiBase;
+	}
+
+	const candidates = [
+		'http://localhost:6413/demo-janee/us-central1/api',
+		'http://localhost:6413/webfootprint-crm/us-central1/api',
+	];
+
+	for (const base of candidates) {
+		try {
+			const res = await fetch(`${base}/api/health`, { signal: AbortSignal.timeout(2000) });
+			if (res.ok) {
+				console.log(`[api] Discovered API base: ${base}`);
+				resolvedApiBase = base;
+				return base;
+			}
+		} catch {
+			continue;
+		}
+	}
+
+	try {
+		const hubRes = await fetch('http://localhost:6417/emulators', { signal: AbortSignal.timeout(2000) });
+		if (hubRes.ok) {
+			console.log('[api] Emulator hub reachable but no function URL found. Functions may still be loading.');
+		}
+	} catch {
+		console.log('[api] Emulator hub not reachable');
+	}
+
+	resolvedApiBase = candidates[0];
+	console.log(`[api] Falling back to: ${resolvedApiBase}`);
+	return resolvedApiBase;
+}
 
 async function getAuthHeaders(): Promise<Record<string, string>> {
 	const auth = getFirebaseAuth();
@@ -18,7 +56,8 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 
 async function apiRequest<T>(method: string, path: string, body?: unknown): Promise<T> {
 	const headers = await getAuthHeaders();
-	const url = `${API_BASE}${path}`;
+	const base = await discoverApiBase();
+	const url = `${base}${path}`;
 
 	console.log(`[api] ${method} ${url}`);
 

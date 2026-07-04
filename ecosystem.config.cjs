@@ -4,7 +4,7 @@ module.exports = {
       name: 'janee-emulators',
       cwd: __dirname,
       script: 'npx',
-      args: 'firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data',
+      args: 'firebase emulators:start --project demo-janee --import=./emulator-data --export-on-exit=./emulator-data',
       autorestart: false,
       watch: false,
       env: {

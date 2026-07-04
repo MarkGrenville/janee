@@ -1,6 +1,6 @@
 #!/usr/bin/env npx ts-node
 
-const BASE_URL = process.env.API_URL || "http://localhost:6413/janee-dev/us-central1/api";
+const BASE_URL = process.env.API_URL || "http://localhost:6413/demo-janee/us-central1/api";
 
 async function request(method: string, path: string, body?: unknown, apiKey?: string) {
   const headers: Record<string, string> = { "Content-Type": "application/json" };

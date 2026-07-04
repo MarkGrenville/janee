@@ -2,7 +2,7 @@ import { Router } from "express";
 import * as admin from "firebase-admin";
 
 const router = Router();
-const db = admin.firestore();
+const getDb = () => admin.firestore();
 
 router.post("/", async (_req, res) => {
   try {
@@ -18,7 +18,7 @@ router.post("/", async (_req, res) => {
       createdAt: now,
       updatedAt: now,
     };
-    await db.collection("users").doc("demo-user").set(demoUser);
+    await getDb().collection("users").doc("demo-user").set(demoUser);
     console.log("[seed] Created demo user");
 
     const apps = [
@@ -68,7 +68,7 @@ router.post("/", async (_req, res) => {
 
     const appIds: string[] = [];
     for (const app of apps) {
-      const ref = await db.collection("apps").add(app);
+      const ref = await getDb().collection("apps").add(app);
       appIds.push(ref.id);
       console.log(`[seed] Created app: ${app.name} (${ref.id})`);
     }
@@ -82,7 +82,7 @@ router.post("/", async (_req, res) => {
     ];
 
     for (const card of movieCards) {
-      await db.collection("apps").doc(appIds[0]).collection("cards").add({
+      await getDb().collection("apps").doc(appIds[0]).collection("cards").add({
         ...card,
         linkUrl: "",
         imageUrl: "",
@@ -104,7 +104,7 @@ router.post("/", async (_req, res) => {
     ];
 
     for (const card of dateCards) {
-      await db.collection("apps").doc(appIds[1]).collection("cards").add({
+      await getDb().collection("apps").doc(appIds[1]).collection("cards").add({
         ...card,
         linkUrl: "",
         imageUrl: "",
@@ -136,7 +136,7 @@ router.post("/", async (_req, res) => {
     ];
 
     for (const card of approvalCards) {
-      await db.collection("apps").doc(appIds[2]).collection("cards").add({
+      await getDb().collection("apps").doc(appIds[2]).collection("cards").add({
         title: card.title,
         subtitle: card.subtitle,
         description: card.description,
@@ -154,7 +154,7 @@ router.post("/", async (_req, res) => {
     console.log(`[seed] Added ${approvalCards.length} approval cards`);
 
     for (const appId of appIds) {
-      await db.collection("users").doc("demo-user").collection("subscriptions").doc(appId).set({
+      await getDb().collection("users").doc("demo-user").collection("subscriptions").doc(appId).set({
         subscribedAt: now,
         notifications: true,
       });

@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from "../utils/auth";
 import { CreateAppRequest, AppDoc, ApiResponse } from "../types";
 
 const router = Router();
-const db = admin.firestore();
+const getDb = () => admin.firestore();
 
 function param(val: string | string[] | undefined): string {
   return Array.isArray(val) ? val[0] : val || "";
@@ -36,10 +36,10 @@ router.post("/", async (req: AuthenticatedRequest, res) => {
       updatedAt: now,
     };
 
-    const docRef = await db.collection("apps").add(appData);
+    const docRef = await getDb().collection("apps").add(appData);
     console.log(`[apps] Created app ${docRef.id} by user ${userId}`);
 
-    await db.collection("users").doc(userId).collection("subscriptions").doc(docRef.id).set({
+    await getDb().collection("users").doc(userId).collection("subscriptions").doc(docRef.id).set({
       subscribedAt: now,
       notifications: true,
     });
@@ -56,7 +56,7 @@ router.get("/", async (req: AuthenticatedRequest, res) => {
     const userId = req.userId!;
     const publicOnly = req.query.public === "true";
 
-    let query: admin.firestore.Query = db.collection("apps");
+    let query: admin.firestore.Query = getDb().collection("apps");
 
     if (publicOnly) {
       query = query.where("isPublic", "==", true);
@@ -81,7 +81,7 @@ router.get("/", async (req: AuthenticatedRequest, res) => {
 router.get("/:appId", async (req: AuthenticatedRequest, res) => {
   try {
     const appId = param(req.params.appId);
-    const doc = await db.collection("apps").doc(appId).get();
+    const doc = await getDb().collection("apps").doc(appId).get();
 
     if (!doc.exists) {
       res.status(404).json({ success: false, error: "App not found" } as ApiResponse);
@@ -91,7 +91,7 @@ router.get("/:appId", async (req: AuthenticatedRequest, res) => {
     const data = doc.data() as AppDoc;
     const userId = req.userId!;
     if (!data.isPublic && data.ownerId !== userId) {
-      const sub = await db.collection("users").doc(userId).collection("subscriptions").doc(appId).get();
+      const sub = await getDb().collection("users").doc(userId).collection("subscriptions").doc(appId).get();
       if (!sub.exists) {
         res.status(403).json({ success: false, error: "Access denied" } as ApiResponse);
         return;
@@ -109,7 +109,7 @@ router.put("/:appId", async (req: AuthenticatedRequest, res) => {
   try {
     const appId = param(req.params.appId);
     const userId = req.userId!;
-    const doc = await db.collection("apps").doc(appId).get();
+    const doc = await getDb().collection("apps").doc(appId).get();
 
     if (!doc.exists) {
       res.status(404).json({ success: false, error: "App not found" } as ApiResponse);
@@ -132,7 +132,7 @@ router.put("/:appId", async (req: AuthenticatedRequest, res) => {
     if (body.webhookUrl !== undefined) updates.webhookUrl = body.webhookUrl;
     updates.updatedAt = admin.firestore.Timestamp.now();
 
-    await db.collection("apps").doc(appId).update(updates);
+    await getDb().collection("apps").doc(appId).update(updates);
     console.log(`[apps] Updated app ${appId} by user ${userId}`);
 
     res.json({ success: true, data: { id: appId, ...updates } } as ApiResponse);
@@ -146,7 +146,7 @@ router.delete("/:appId", async (req: AuthenticatedRequest, res) => {
   try {
     const appId = param(req.params.appId);
     const userId = req.userId!;
-    const doc = await db.collection("apps").doc(appId).get();
+    const doc = await getDb().collection("apps").doc(appId).get();
 
     if (!doc.exists) {
       res.status(404).json({ success: false, error: "App not found" } as ApiResponse);
@@ -158,7 +158,7 @@ router.delete("/:appId", async (req: AuthenticatedRequest, res) => {
       return;
     }
 
-    await db.collection("apps").doc(appId).delete();
+    await getDb().collection("apps").doc(appId).delete();
     console.log(`[apps] Deleted app ${appId} by user ${userId}`);
 
     res.json({ success: true } as ApiResponse);
@@ -173,18 +173,18 @@ router.post("/:appId/subscribe", async (req: AuthenticatedRequest, res) => {
     const appId = param(req.params.appId);
     const userId = req.userId!;
 
-    const appDoc = await db.collection("apps").doc(appId).get();
+    const appDoc = await getDb().collection("apps").doc(appId).get();
     if (!appDoc.exists) {
       res.status(404).json({ success: false, error: "App not found" } as ApiResponse);
       return;
     }
 
-    await db.collection("users").doc(userId).collection("subscriptions").doc(appId).set({
+    await getDb().collection("users").doc(userId).collection("subscriptions").doc(appId).set({
       subscribedAt: admin.firestore.Timestamp.now(),
       notifications: true,
     });
 
-    await db.collection("apps").doc(appId).update({
+    await getDb().collection("apps").doc(appId).update({
       subscriberCount: admin.firestore.FieldValue.increment(1),
     });
 
@@ -201,9 +201,9 @@ router.delete("/:appId/subscribe", async (req: AuthenticatedRequest, res) => {
     const appId = param(req.params.appId);
     const userId = req.userId!;
 
-    await db.collection("users").doc(userId).collection("subscriptions").doc(appId).delete();
+    await getDb().collection("users").doc(userId).collection("subscriptions").doc(appId).delete();
 
-    await db.collection("apps").doc(appId).update({
+    await getDb().collection("apps").doc(appId).update({
       subscriberCount: admin.firestore.FieldValue.increment(-1),
     });
 

@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from "../utils/auth";
 import { CreateCardRequest, CardDoc, AppDoc, ApiResponse } from "../types";
 
 const router = Router({ mergeParams: true });
-const db = admin.firestore();
+const getDb = () => admin.firestore();
 
 function param(val: string | string[] | undefined): string {
   return Array.isArray(val) ? val[0] : val || "";
@@ -15,7 +15,7 @@ router.post("/", async (req: AuthenticatedRequest, res) => {
     const appId = param(req.params.appId);
     const userId = req.userId!;
 
-    const appDoc = await db.collection("apps").doc(appId).get();
+    const appDoc = await getDb().collection("apps").doc(appId).get();
     if (!appDoc.exists) {
       res.status(404).json({ success: false, error: "App not found" } as ApiResponse);
       return;
@@ -34,11 +34,11 @@ router.post("/", async (req: AuthenticatedRequest, res) => {
     }
 
     const now = admin.firestore.Timestamp.now();
-    const batch = db.batch();
+    const batch = getDb().batch();
     const created: { id: string; title: string }[] = [];
 
     for (const card of cards) {
-      const ref = db.collection("apps").doc(appId).collection("cards").doc();
+      const ref = getDb().collection("apps").doc(appId).collection("cards").doc();
       const cardData: CardDoc = {
         title: card.title.trim(),
         subtitle: card.subtitle?.trim() || "",
@@ -73,7 +73,7 @@ router.get("/", async (req: AuthenticatedRequest, res) => {
     const userId = req.userId!;
     const status = (req.query.status as string) || "active";
 
-    const appDoc = await db.collection("apps").doc(appId).get();
+    const appDoc = await getDb().collection("apps").doc(appId).get();
     if (!appDoc.exists) {
       res.status(404).json({ success: false, error: "App not found" } as ApiResponse);
       return;
@@ -81,14 +81,14 @@ router.get("/", async (req: AuthenticatedRequest, res) => {
 
     const appData = appDoc.data() as AppDoc;
     if (!appData.isPublic && appData.ownerId !== userId) {
-      const sub = await db.collection("users").doc(userId).collection("subscriptions").doc(appId).get();
+      const sub = await getDb().collection("users").doc(userId).collection("subscriptions").doc(appId).get();
       if (!sub.exists) {
         res.status(403).json({ success: false, error: "Access denied" } as ApiResponse);
         return;
       }
     }
 
-    const snapshot = await db
+    const snapshot = await getDb()
       .collection("apps").doc(appId).collection("cards")
       .where("status", "==", status)
       .orderBy("createdAt", "desc")
@@ -110,14 +110,14 @@ router.get("/undecided", async (req: AuthenticatedRequest, res) => {
     const appId = param(req.params.appId);
     const userId = req.userId!;
 
-    const cardsSnapshot = await db
+    const cardsSnapshot = await getDb()
       .collection("apps").doc(appId).collection("cards")
       .where("status", "==", "active")
       .orderBy("createdAt", "asc")
       .limit(100)
       .get();
 
-    const decisionsSnapshot = await db
+    const decisionsSnapshot = await getDb()
       .collection("users").doc(userId).collection("decisions")
       .where("appId", "==", appId)
       .get();
@@ -142,7 +142,7 @@ router.put("/:cardId", async (req: AuthenticatedRequest, res) => {
     const cardId = param(req.params.cardId);
     const userId = req.userId!;
 
-    const appDoc = await db.collection("apps").doc(appId).get();
+    const appDoc = await getDb().collection("apps").doc(appId).get();
     if (!appDoc.exists || (appDoc.data() as AppDoc).ownerId !== userId) {
       res.status(403).json({ success: false, error: "Only the app owner can update cards" } as ApiResponse);
       return;
@@ -160,7 +160,7 @@ router.put("/:cardId", async (req: AuthenticatedRequest, res) => {
     if (body.webhookUrl !== undefined) updates.webhookUrl = body.webhookUrl;
     if (body.metadata !== undefined) updates.metadata = body.metadata;
 
-    await db.collection("apps").doc(appId).collection("cards").doc(cardId).update(updates);
+    await getDb().collection("apps").doc(appId).collection("cards").doc(cardId).update(updates);
     console.log(`[cards] Updated card ${cardId} in app ${appId}`);
 
     res.json({ success: true, data: { id: cardId, ...updates } } as ApiResponse);

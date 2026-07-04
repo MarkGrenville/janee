@@ -21,7 +21,7 @@
 	let creatingKey = $state(false);
 	let newKeyLabel = $state('');
 
-	let appId = $derived($page.params.appId);
+	let appId = $derived($page.params.appId ?? '');
 
 	onMount(async () => {
 		await loadApp();

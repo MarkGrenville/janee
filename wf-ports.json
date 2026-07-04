@@ -4,7 +4,7 @@
   "description": "Tinder-style yes/no decision app with AI integration, webhooks, and CLI",
   "focusIdentifier": "janee",
   "projectPath": "/Users/markgrenville/Projects/janee",
-  "firebaseProjectId": "janee-dev",
+  "firebaseProjectId": "demo-janee",
   "services": [
     {
       "name": "SvelteKit Web",

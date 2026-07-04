@@ -79,6 +79,10 @@ All ports in range 6400-6419. See `wf-ports.json` for full mapping.
 | 6416 | Emulator UI |
 | 6417 | Emulator Hub |
 
+## Firebase Project ID
+
+The emulator uses `demo-janee` as the project ID (demo- prefix enables emulator-only mode without a real Firebase account). However, the actual URL path may use whatever project ID the Firebase CLI has active globally. The SvelteKit API client auto-discovers the correct project ID at startup.
+
 ## PM2 Naming Convention
 
 All PM2 process names are prefixed with `janee-` for PortIO compatibility:

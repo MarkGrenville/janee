@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from "../utils/auth";
 import { CreateDecisionRequest, DecisionDoc, CardDoc, ApiResponse } from "../types";
 
 const router = Router({ mergeParams: true });
-const db = admin.firestore();
+const getDb = () => admin.firestore();
 
 function param(val: string | string[] | undefined): string {
   return Array.isArray(val) ? val[0] : val || "";
@@ -26,7 +26,7 @@ router.post("/", async (req: AuthenticatedRequest, res) => {
       return;
     }
 
-    const cardRef = db.collection("apps").doc(appId).collection("cards").doc(body.cardId);
+    const cardRef = getDb().collection("apps").doc(appId).collection("cards").doc(body.cardId);
     const cardDoc = await cardRef.get();
 
     if (!cardDoc.exists) {
@@ -54,7 +54,7 @@ router.post("/", async (req: AuthenticatedRequest, res) => {
       webhookFiredAt: null,
     };
 
-    const decisionRef = await db
+    const decisionRef = await getDb()
       .collection("users").doc(userId)
       .collection("decisions")
       .add(decisionData);
@@ -78,7 +78,7 @@ router.get("/", async (req: AuthenticatedRequest, res) => {
     const filter = req.query.decision as string | undefined;
     const limitParam = parseInt(req.query.limit as string) || 50;
 
-    let query: admin.firestore.Query = db
+    let query: admin.firestore.Query = getDb()
       .collection("users").doc(userId)
       .collection("decisions")
       .where("appId", "==", appId);
@@ -107,7 +107,7 @@ router.get("/all", async (req: AuthenticatedRequest, res) => {
     const userId = req.userId!;
     const limitParam = parseInt(req.query.limit as string) || 100;
 
-    const snapshot = await db
+    const snapshot = await getDb()
       .collection("users").doc(userId)
       .collection("decisions")
       .orderBy("decidedAt", "desc")

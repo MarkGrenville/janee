@@ -6,9 +6,9 @@ import { getFunctions, connectFunctionsEmulator, type Functions } from 'firebase
 
 const firebaseConfig = {
 	apiKey: 'demo-janee-key',
-	authDomain: 'janee-dev.firebaseapp.com',
-	projectId: 'janee-dev',
-	storageBucket: 'janee-dev.appspot.com',
+	authDomain: 'demo-janee.firebaseapp.com',
+	projectId: 'demo-janee',
+	storageBucket: 'demo-janee.appspot.com',
 	messagingSenderId: '000000000000',
 	appId: '1:000000000000:web:000000000000',
 };

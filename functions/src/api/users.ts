@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from "../utils/auth";
 import { UserDoc, ApiResponse } from "../types";
 
 const router = Router();
-const db = admin.firestore();
+const getDb = () => admin.firestore();
 
 function param(val: string | string[] | undefined): string {
   return Array.isArray(val) ? val[0] : val || "";
@@ -13,7 +13,7 @@ function param(val: string | string[] | undefined): string {
 router.get("/me", async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.userId!;
-    const doc = await db.collection("users").doc(userId).get();
+    const doc = await getDb().collection("users").doc(userId).get();
 
     if (!doc.exists) {
       res.status(404).json({ success: false, error: "User profile not found" } as ApiResponse);
@@ -39,7 +39,7 @@ router.put("/me", async (req: AuthenticatedRequest, res) => {
     if (body.publicProfile !== undefined) updates.publicProfile = body.publicProfile;
     updates.updatedAt = admin.firestore.Timestamp.now();
 
-    await db.collection("users").doc(userId).update(updates);
+    await getDb().collection("users").doc(userId).update(updates);
     console.log(`[users] Updated profile for user ${userId}`);
 
     res.json({ success: true, data: updates } as ApiResponse);
@@ -52,7 +52,7 @@ router.put("/me", async (req: AuthenticatedRequest, res) => {
 router.get("/:userId", async (req: AuthenticatedRequest, res) => {
   try {
     const userId = param(req.params.userId);
-    const doc = await db.collection("users").doc(userId).get();
+    const doc = await getDb().collection("users").doc(userId).get();
 
     if (!doc.exists) {
       res.status(404).json({ success: false, error: "User not found" } as ApiResponse);
@@ -86,22 +86,22 @@ router.post("/friends/:friendId", async (req: AuthenticatedRequest, res) => {
       return;
     }
 
-    const friendDoc = await db.collection("users").doc(friendId).get();
+    const friendDoc = await getDb().collection("users").doc(friendId).get();
     if (!friendDoc.exists) {
       res.status(404).json({ success: false, error: "User not found" } as ApiResponse);
       return;
     }
 
     const now = admin.firestore.Timestamp.now();
-    const batch = db.batch();
+    const batch = getDb().batch();
 
-    batch.set(db.collection("users").doc(userId).collection("friends").doc(friendId), {
+    batch.set(getDb().collection("users").doc(userId).collection("friends").doc(friendId), {
       status: "pending",
       initiatedBy: userId,
       since: now,
     });
 
-    batch.set(db.collection("users").doc(friendId).collection("friends").doc(userId), {
+    batch.set(getDb().collection("users").doc(friendId).collection("friends").doc(userId), {
       status: "pending",
       initiatedBy: userId,
       since: now,
@@ -123,12 +123,12 @@ router.put("/friends/:friendId/accept", async (req: AuthenticatedRequest, res) =
     const friendId = param(req.params.friendId);
     const now = admin.firestore.Timestamp.now();
 
-    const batch = db.batch();
-    batch.update(db.collection("users").doc(userId).collection("friends").doc(friendId), {
+    const batch = getDb().batch();
+    batch.update(getDb().collection("users").doc(userId).collection("friends").doc(friendId), {
       status: "accepted",
       since: now,
     });
-    batch.update(db.collection("users").doc(friendId).collection("friends").doc(userId), {
+    batch.update(getDb().collection("users").doc(friendId).collection("friends").doc(userId), {
       status: "accepted",
       since: now,
     });

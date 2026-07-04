@@ -5,7 +5,7 @@ import { AuthenticatedRequest, hashApiKey } from "../utils/auth";
 import { CreateApiKeyRequest, ApiKeyDoc, AppDoc, ApiResponse } from "../types";
 
 const router = Router();
-const db = admin.firestore();
+const getDb = () => admin.firestore();
 
 function param(val: string | string[] | undefined): string {
   return Array.isArray(val) ? val[0] : val || "";
@@ -21,7 +21,7 @@ router.post("/", async (req: AuthenticatedRequest, res) => {
       return;
     }
 
-    const appDoc = await db.collection("apps").doc(body.appId).get();
+    const appDoc = await getDb().collection("apps").doc(body.appId).get();
     if (!appDoc.exists) {
       res.status(404).json({ success: false, error: "App not found" } as ApiResponse);
       return;
@@ -45,7 +45,7 @@ router.post("/", async (req: AuthenticatedRequest, res) => {
       lastUsedAt: null,
     };
 
-    await db.collection("apiKeys").doc(keyHash).set(keyData);
+    await getDb().collection("apiKeys").doc(keyHash).set(keyData);
     console.log(`[keys] Created API key for app ${body.appId} by user ${userId}`);
 
     res.status(201).json({
@@ -68,7 +68,7 @@ router.post("/", async (req: AuthenticatedRequest, res) => {
 router.get("/", async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.userId!;
-    const snapshot = await db.collection("apiKeys").where("userId", "==", userId).get();
+    const snapshot = await getDb().collection("apiKeys").where("userId", "==", userId).get();
 
     const keys = snapshot.docs.map((doc) => {
       const data = doc.data();
@@ -95,13 +95,13 @@ router.delete("/:keyId", async (req: AuthenticatedRequest, res) => {
     const userId = req.userId!;
     const keyId = param(req.params.keyId);
 
-    const keyDoc = await db.collection("apiKeys").doc(keyId).get();
+    const keyDoc = await getDb().collection("apiKeys").doc(keyId).get();
     if (!keyDoc.exists || keyDoc.data()?.userId !== userId) {
       res.status(404).json({ success: false, error: "Key not found" } as ApiResponse);
       return;
     }
 
-    await db.collection("apiKeys").doc(keyId).delete();
+    await getDb().collection("apiKeys").doc(keyId).delete();
     console.log(`[keys] Deleted API key ${keyId} by user ${userId}`);
 
     res.json({ success: true } as ApiResponse);
